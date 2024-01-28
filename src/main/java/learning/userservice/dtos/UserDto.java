@@ -2,7 +2,8 @@ package learning.userservice.dtos;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.core.StandardReflectionParameterNameDiscoverer;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -12,6 +13,6 @@ public class UserDto {
         String username;
         String password;
         NameDto nameDto;
-        AddressDto  addressDto;
+        List<AddressDto> addressDtos;
         String phone;
 }
