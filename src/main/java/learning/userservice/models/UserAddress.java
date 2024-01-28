@@ -12,7 +12,7 @@ import lombok.Setter;
 public class UserAddress extends BaseModel{
     String city;
     String street;
-    String number;
+    Integer number;
     String zipcode;
     @ManyToOne
     Geolocation geolocation;
