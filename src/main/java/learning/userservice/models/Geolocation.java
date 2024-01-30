@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Entity
+//@Entity
 public class Geolocation extends BaseModel{
     String latitude;
     String longitude;

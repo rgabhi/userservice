@@ -8,12 +8,14 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Entity
+@Entity(name="address")
 public class UserAddress extends BaseModel{
+    @ManyToOne
+    User user;
     String city;
     String street;
     Integer number;
     String zipcode;
-    @ManyToOne
-    Geolocation geolocation;
+    String longitude;
+    String latitude;
 }

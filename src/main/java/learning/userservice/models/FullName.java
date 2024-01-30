@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Entity
+//@Entity
 public class FullName extends BaseModel{
     String firstName;
     String lastName;
