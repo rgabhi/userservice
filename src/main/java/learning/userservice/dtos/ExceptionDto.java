@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class NameDto {
-    String firstname;
-    String lastname;
+public class ExceptionDto {
+    String message;
+    String details;
 }

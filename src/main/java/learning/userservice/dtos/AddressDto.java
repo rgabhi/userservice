@@ -10,5 +10,5 @@ public class AddressDto {
     String street;
     Integer number;
     String zipcode;
-    GeolocationDto geolocationDto;
+    GeolocationDto geolocation;
 }

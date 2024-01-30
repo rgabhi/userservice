@@ -12,7 +12,7 @@ public class UserDto {
         String email;
         String username;
         String password;
-        NameDto nameDto;
-        List<AddressDto> addressDtos;
+        NameDto name;
+        List<AddressDto> address;
         String phone;
 }
