@@ -54,9 +54,12 @@ public class SelfUserService implements UserService{
                 throw new UserAlreadyExistsException("User with username: " + user.getUsername() + " already exists.");
             }
         }
-        user.setUserAddresses(userAddressRepository.saveAll(user.getUserAddresses()));
+//        for(UserAddress address : user.getUserAddresses()){
+//            address.setUser(user);
+//        }
+//        user.setUserAddresses(userAddressRepository.saveAll(user.getUserAddresses()));
         return userRepository.save(user);
-        // Address
+
     }
 
     @Override

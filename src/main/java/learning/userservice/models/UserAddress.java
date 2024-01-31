@@ -1,21 +1,22 @@
 package learning.userservice.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.Date;
 
 @Getter
 @Setter
 @Entity(name="address")
 public class UserAddress extends BaseModel{
     @ManyToOne
-    User user;
-    String city;
-    String street;
-    Integer number;
-    String zipcode;
-    String longitude;
-    String latitude;
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
+    private String city;
+    private String street;
+    private Integer number;
+    private String zipcode;
+    private String longitude;
+    private String latitude;
 }
