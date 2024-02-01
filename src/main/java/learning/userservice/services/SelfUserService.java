@@ -54,10 +54,10 @@ public class SelfUserService implements UserService{
                 throw new UserAlreadyExistsException("User with username: " + user.getUsername() + " already exists.");
             }
         }
-//        for(UserAddress address : user.getUserAddresses()){
-//            address.setUser(user);
-//        }
-//        user.setUserAddresses(userAddressRepository.saveAll(user.getUserAddresses()));
+        // necessary step to set user_id(FK) in address table
+        for(UserAddress address : user.getUserAddresses()){
+            address.setUser(user);
+        }
         return userRepository.save(user);
 
     }
@@ -82,6 +82,5 @@ public class SelfUserService implements UserService{
     @Override
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
-        userAddressRepository.deleteAllByUser_Id(id);
     }
 }

@@ -97,24 +97,15 @@ public class UserController {
         for(AddressDto addressDto : userDto.getAddress()){
             userAddresses.add(convertAddressDtoToUserAddress(addressDto));
         }
-        User user = new User();
-        user.setUserAddresses(userAddresses);
-        user.setFirstName(userDto.getName().getFirstname());
-        user.setLastName(userDto.getName().getLastname());
-        user.setUsername(userDto.getUsername());
-        user.setPhone(userDto.getPhone());
-        user.setPassword(user.getPassword());
-        user.setEmail(userDto.getEmail());
-//        return new User.UserBuilder()
-//                .setUsername(userDto.getUsername())
-//                .setEmail(userDto.getEmail())
-//                .setPassword(userDto.getPassword())
-//                .setAddresses(userAddresses)
-//                .setFirstName(userDto.getName().getFirstname())
-//                .setLastName(userDto.getName().getLastname())
-//                .setPhone(userDto.getPhone())
-//                .build();
-        return  user;
+        return new User.UserBuilder()
+                .setUsername(userDto.getUsername())
+                .setEmail(userDto.getEmail())
+                .setPassword(userDto.getPassword())
+                .setAddresses(userAddresses)
+                .setFirstName(userDto.getName().getFirstname())
+                .setLastName(userDto.getName().getLastname())
+                .setPhone(userDto.getPhone())
+                .build();
     }
     private UserDto convertUserToUserDto(User user){
 

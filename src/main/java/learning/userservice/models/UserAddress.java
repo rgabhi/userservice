@@ -1,5 +1,6 @@
 package learning.userservice.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,7 +9,8 @@ import java.util.Date;
 
 @Getter
 @Setter
-@Entity(name="address")
+@Entity
+@Table(name = "address")
 public class UserAddress extends BaseModel{
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")

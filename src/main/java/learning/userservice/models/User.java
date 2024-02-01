@@ -9,38 +9,37 @@ import java.util.List;
 
 @Getter
 @Setter
-@Entity(name="user")
+@Entity
+@Table(name = "user")
 public class User extends BaseModel{
     private String email;
     private String username;
     private String password;
     private String firstName;
     private String lastName;
-    @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL}) // being already mapped by an attribute called user
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.EAGER) // being already mapped by an attribute called user
     private List<UserAddress> userAddresses;
     private String phone;
-//    private User(UserBuilder userBuilder){
-//        super();
-//        this.email = userBuilder.email;
-//        this.username = userBuilder.username;
-//        this.password = userBuilder.password;
-////        this.fullName = userBuilder.fullName;
-//        this.firstName = userBuilder.firstName;
-//        this.lastName = userBuilder.lastName;
-//        this.userAddresses = userBuilder.userAddresses;
-//        this.phone = userBuilder.phone;
-//    }
-//
-//    public User() {
-//
-//    }
+    private User(UserBuilder userBuilder){
+        super();
+        this.email = userBuilder.email;
+        this.username = userBuilder.username;
+        this.password = userBuilder.password;
+        this.firstName = userBuilder.firstName;
+        this.lastName = userBuilder.lastName;
+        this.userAddresses = userBuilder.userAddresses;
+        this.phone = userBuilder.phone;
+    }
+
+    public User() {
+
+    }
 
 
     public static class UserBuilder{
         String email;
         String username;
         String password;
-//        FullName fullName;
         String firstName;
         String lastName;
         List<UserAddress> userAddresses;
@@ -68,10 +67,6 @@ public class User extends BaseModel{
             return this;
         }
 
-//        public  UserBuilder setFullName(FullName name){
-//            this.fullName = name;
-//            return  this;
-//        }
         public  UserBuilder setFirstName(String firstName){
             this.firstName = firstName;
             return this;
@@ -90,9 +85,9 @@ public class User extends BaseModel{
             return this;
         }
 
-//        public User build(){
-//            return new User(this);
-//        }
+        public User build(){
+            return new User(this);
+        }
 
     }
 }
