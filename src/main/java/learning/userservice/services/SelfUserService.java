@@ -1,5 +1,6 @@
 package learning.userservice.services;
 
+import learning.userservice.exceptions.EmptyRequiredFieldException;
 import learning.userservice.exceptions.UserAlreadyExistsException;
 import learning.userservice.exceptions.UserNotFoundException;
 import learning.userservice.models.User;
@@ -40,8 +41,11 @@ public class SelfUserService implements UserService{
     }
 
     @Override
-    public User addUser(User user) throws UserAlreadyExistsException {
+    public User addUser(User user) throws UserAlreadyExistsException, EmptyRequiredFieldException {
         // check mandatory fields
+        if((user.getUsername()==null) || (user.getEmail() == null) || (user.getPassword()== null)){
+            throw new EmptyRequiredFieldException("email/username/password cannot be empty");
+        }
 
         //check if user already exists
         Optional<User> userOptional = userRepository.
@@ -75,7 +79,6 @@ public class SelfUserService implements UserService{
         user.setPassword(updateUser.getPassword() != null ? updateUser.getPassword() : user.getPassword());
         user.setUsername(updateUser.getUsername() != null ? updateUser.getUsername() : user.getUsername());
         user.setPhone(updateUser.getPhone() != null ? updateUser.getPhone() : user.getPhone());
-
         return userRepository.save(user);
     }
 

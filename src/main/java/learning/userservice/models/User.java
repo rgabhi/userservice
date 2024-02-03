@@ -45,24 +45,15 @@ public class User extends BaseModel{
         List<UserAddress> userAddresses;
         String phone;
 
-        public  UserBuilder setEmail(String email) throws EmptyRequiredFieldException {
-            if(email == null){
-                throw new EmptyRequiredFieldException("email can't be null.");
-            }
+        public  UserBuilder setEmail(String email){
             this.email = email;
             return this;
         }
-        public  UserBuilder setUsername(String username) throws EmptyRequiredFieldException {
-            if(username == null){
-                throw new EmptyRequiredFieldException("username can't be null.");
-            }
+        public  UserBuilder setUsername(String username) {
             this.username = username;
             return this;
         }
-        public  UserBuilder setPassword(String password) throws EmptyRequiredFieldException {
-            if(password == null || password.isEmpty()){
-                throw new EmptyRequiredFieldException("password can't be null/empty.");
-            }
+        public  UserBuilder setPassword(String password) {
             this.password = password;
             return this;
         }

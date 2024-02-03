@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.naming.Name;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,7 +55,7 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable(name="id") Long id, @RequestBody UserDto userDto) throws EmptyRequiredFieldException, UserNotFoundException {
+    public ResponseEntity<UserDto> updateUser(@PathVariable(name="id") Long id, @RequestBody UserDto userDto) throws UserNotFoundException {
         return new ResponseEntity<>(
                 convertUserToUserDto(userService.updateUser(id, convertUserDtoToUSer(userDto))),
                 HttpStatus.OK);
@@ -81,6 +82,7 @@ public class UserController {
 
     private AddressDto convertUserAddressToAddressDto(UserAddress address){
         AddressDto addressDto = new AddressDto();
+        addressDto.setAddressId(address.getId());
         addressDto.setCity(address.getCity());
         addressDto.setStreet(address.getStreet());
         addressDto.setNumber(address.getNumber());
@@ -92,18 +94,35 @@ public class UserController {
         return addressDto;
     }
 
-    private User convertUserDtoToUSer(UserDto userDto) throws EmptyRequiredFieldException {
+    private User convertUserDtoToUSer(UserDto userDto){
+        // address
         List<UserAddress> userAddresses = new ArrayList<>();
-        for(AddressDto addressDto : userDto.getAddress()){
-            userAddresses.add(convertAddressDtoToUserAddress(addressDto));
+        if(userDto.getAddress() != null){
+            for(AddressDto addressDto : userDto.getAddress()){
+                userAddresses.add(convertAddressDtoToUserAddress(addressDto));
+            }
         }
+        else{
+            userAddresses = null;
+        }
+        // name dto
+        NameDto nameDto = new NameDto();
+        if(userDto.getName() != null){
+            nameDto.setFirstname(userDto.getName().getFirstname());
+            nameDto.setLastname(userDto.getName().getLastname());
+        }
+        else{
+            nameDto.setFirstname(null);
+            nameDto.setLastname(null);
+        }
+
         return new User.UserBuilder()
                 .setUsername(userDto.getUsername())
                 .setEmail(userDto.getEmail())
                 .setPassword(userDto.getPassword())
                 .setAddresses(userAddresses)
-                .setFirstName(userDto.getName().getFirstname())
-                .setLastName(userDto.getName().getLastname())
+                .setFirstName(nameDto.getFirstname())
+                .setLastName(nameDto.getLastname())
                 .setPhone(userDto.getPhone())
                 .build();
     }
@@ -111,10 +130,16 @@ public class UserController {
 
         UserDto userDto = new UserDto();
         // addressDtos
-        List<AddressDto> addressDtos = new ArrayList<>();
-        for(UserAddress address : user.getUserAddresses()){
-            addressDtos.add(convertUserAddressToAddressDto(address));
+        List<AddressDto> addressDtos;
+        if(user.getUserAddresses() != null){
+             addressDtos = new ArrayList<>();
+            for(UserAddress address : user.getUserAddresses()){
+                addressDtos.add(convertUserAddressToAddressDto(address));
+            }
+        }else{
+            addressDtos = null;
         }
+
         userDto.setUserId(user.getId());
         userDto.setUsername(user.getUsername());
         userDto.setEmail(user.getEmail());
