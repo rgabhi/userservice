@@ -43,7 +43,7 @@ public class SelfUserService implements UserService{
     @Override
     public User addUser(User user) throws UserAlreadyExistsException, EmptyRequiredFieldException {
         // check mandatory fields
-        if((user.getUsername()==null) || (user.getEmail() == null) || (user.getPassword()== null)){
+        if((user.getUsername()==null) || (user.getEmail() == null) || (user.getHashedPassword()== null)){
             throw new EmptyRequiredFieldException("email/username/password cannot be empty");
         }
 
@@ -76,7 +76,7 @@ public class SelfUserService implements UserService{
         User user = userOptional.get();
         user.setFirstName(updateUser.getFirstName() != null ? updateUser.getFirstName() : user.getFirstName());
         user.setLastName(updateUser.getLastName() != null ? updateUser.getLastName() : user.getLastName());
-        user.setPassword(updateUser.getPassword() != null ? updateUser.getPassword() : user.getPassword());
+        user.setHashedPassword(updateUser.getHashedPassword() != null ? updateUser.getHashedPassword() : user.getHashedPassword());
         user.setUsername(updateUser.getUsername() != null ? updateUser.getUsername() : user.getUsername());
         user.setPhone(updateUser.getPhone() != null ? updateUser.getPhone() : user.getPhone());
         return userRepository.save(user);

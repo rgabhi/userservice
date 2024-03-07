@@ -143,7 +143,7 @@ public class UserController {
         userDto.setUserId(user.getId());
         userDto.setUsername(user.getUsername());
         userDto.setEmail(user.getEmail());
-        userDto.setPassword(user.getPassword());
+        userDto.setPassword(user.getHashedPassword());
         userDto.setAddress(addressDtos);
         //nameDto
         NameDto nameDto = new NameDto();

@@ -13,18 +13,22 @@ import java.util.List;
 @Table(name = "user")
 public class User extends BaseModel{
     private String email;
+    private boolean isEmailVerified;
     private String username;
-    private String password;
+    private String hashedPassword;
+    @ManyToMany
+    private List<Role> roles;
     private String firstName;
     private String lastName;
     @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.EAGER) // being already mapped by an attribute called user
     private List<UserAddress> userAddresses;
     private String phone;
+
     private User(UserBuilder userBuilder){
         super();
         this.email = userBuilder.email;
         this.username = userBuilder.username;
-        this.password = userBuilder.password;
+        this.hashedPassword = userBuilder.hashedPassword;
         this.firstName = userBuilder.firstName;
         this.lastName = userBuilder.lastName;
         this.userAddresses = userBuilder.userAddresses;
@@ -38,8 +42,11 @@ public class User extends BaseModel{
 
     public static class UserBuilder{
         String email;
+        boolean isEmailVerified;
         String username;
-        String password;
+
+        List<Role> roles;
+        String hashedPassword;
         String firstName;
         String lastName;
         List<UserAddress> userAddresses;
@@ -49,12 +56,23 @@ public class User extends BaseModel{
             this.email = email;
             return this;
         }
+
+        public UserBuilder setIsEmailVerified(boolean isEmailVerified){
+            this.isEmailVerified =  isEmailVerified;
+            return this;
+        }
+
+        public UserBuilder setRoles(List<Role> roles) {
+            this.roles = roles;
+            return this;
+        }
+
         public  UserBuilder setUsername(String username) {
             this.username = username;
             return this;
         }
-        public  UserBuilder setPassword(String password) {
-            this.password = password;
+        public  UserBuilder setPassword(String hashedPassword) {
+            this.hashedPassword = hashedPassword;
             return this;
         }
 
