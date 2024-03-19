@@ -1,9 +1,9 @@
 CREATE TABLE address
 (
-    id         BIGINT NOT NULL,
+    id         BIGINT AUTO_INCREMENT NOT NULL,
     created_at datetime NULL,
     updated_at datetime NULL,
-    is_deleted BIT(1) NOT NULL,
+    deleted    BIT(1) NOT NULL,
     user_id    BIGINT NULL,
     city       VARCHAR(255) NULL,
     street     VARCHAR(255) NULL,
@@ -16,20 +16,20 @@ CREATE TABLE address
 
 CREATE TABLE `role`
 (
-    id         BIGINT NOT NULL,
+    id         BIGINT AUTO_INCREMENT NOT NULL,
     created_at datetime NULL,
     updated_at datetime NULL,
-    is_deleted BIT(1) NOT NULL,
+    deleted    BIT(1) NOT NULL,
     name       VARCHAR(255) NULL,
     CONSTRAINT pk_role PRIMARY KEY (id)
 );
 
 CREATE TABLE token
 (
-    id         BIGINT NOT NULL,
+    id         BIGINT AUTO_INCREMENT NOT NULL,
     created_at datetime NULL,
     updated_at datetime NULL,
-    is_deleted BIT(1) NOT NULL,
+    deleted    BIT(1) NOT NULL,
     value      VARCHAR(255) NULL,
     user_id    BIGINT NULL,
     expiry_at  datetime NULL,
@@ -38,10 +38,10 @@ CREATE TABLE token
 
 CREATE TABLE user
 (
-    id                BIGINT NOT NULL,
+    id                BIGINT AUTO_INCREMENT NOT NULL,
     created_at        datetime NULL,
     updated_at        datetime NULL,
-    is_deleted        BIT(1) NOT NULL,
+    deleted           BIT(1) NOT NULL,
     email             VARCHAR(255) NULL,
     is_email_verified BIT(1) NOT NULL,
     username          VARCHAR(255) NULL,
