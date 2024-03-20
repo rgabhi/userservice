@@ -14,5 +14,5 @@ public class BaseModel{
     long id;
     Date createdAt;
     Date updatedAt;
-    boolean isDeleted;
+    boolean deleted;
 }

@@ -1,19 +1,18 @@
 package learning.userservice.controllers;
 
-import learning.userservice.dtos.AddressDto;
-import learning.userservice.dtos.GeolocationDto;
-import learning.userservice.dtos.NameDto;
-import learning.userservice.dtos.UserDto;
-import learning.userservice.exceptions.EmptyRequiredFieldException;
-import learning.userservice.exceptions.UserAlreadyExistsException;
-import learning.userservice.exceptions.UserNotFoundException;
+import learning.userservice.dtos.*;
+import learning.userservice.exceptions.*;
+import learning.userservice.models.Token;
 import learning.userservice.models.User;
 import learning.userservice.models.UserAddress;
 import learning.userservice.services.UserService;
+import lombok.NonNull;
+import org.antlr.v4.runtime.misc.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
 import javax.naming.Name;
@@ -30,6 +29,34 @@ public class UserController {
         this.userService = userService;
     }
 
+    @PostMapping("/signup")
+    public ResponseEntity<User> signUp(@RequestBody SignUpRequestDto requestDto) throws UserAlreadyExistsException {
+        User user = userService.signup(requestDto.getFirstName(), requestDto.getLastName(),
+                requestDto.getEmail(), requestDto.getPassword());
+        return new ResponseEntity<>(user, HttpStatus.OK);
+
+    }
+
+    @PostMapping("/login")
+    public Token login(@RequestBody LoginRequestDto requestDto) throws UserNotFoundException, InvalidFieldException {
+        // check if user and password in db
+        // if yes return user
+        // else throw error
+        return userService.login(requestDto.getEmail(), requestDto.getPassword());
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@RequestBody LogoutRequestDto requestDto) throws TokenNotFoundOrExpiredException {
+        // delete token if exists
+        // otherwise throw 404 error
+        userService.logout(requestDto.getToken());
+        return  new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/validate/{token}")
+    public User validateToken(@PathVariable("token") @NonNull String token) throws TokenNotFoundOrExpiredException {
+        return userService.validateToken(token);
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getUser(@PathVariable(name="id") Long id) throws UserNotFoundException {

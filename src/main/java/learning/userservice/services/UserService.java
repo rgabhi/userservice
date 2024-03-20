@@ -1,13 +1,19 @@
 package learning.userservice.services;
 
-import learning.userservice.exceptions.EmptyRequiredFieldException;
-import learning.userservice.exceptions.UserAlreadyExistsException;
-import learning.userservice.exceptions.UserNotFoundException;
+import learning.userservice.exceptions.*;
+import learning.userservice.models.Token;
 import learning.userservice.models.User;
 
 import java.util.List;
 
 public interface UserService {
+    public User signup(String firstName, String lastName, String email, String password) throws UserAlreadyExistsException;
+
+    public Token login(String email, String password) throws UserNotFoundException, InvalidFieldException;
+
+    public void logout(String token) throws TokenNotFoundOrExpiredException;
+
+    public User validateToken(String token) throws TokenNotFoundOrExpiredException;
     public User getUser(Long id) throws UserNotFoundException;
     public List<User> getAllUsers();
     public User addUser(User user) throws UserAlreadyExistsException, EmptyRequiredFieldException;

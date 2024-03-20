@@ -1,30 +1,103 @@
 package learning.userservice.services;
 
-import learning.userservice.exceptions.EmptyRequiredFieldException;
-import learning.userservice.exceptions.UserAlreadyExistsException;
-import learning.userservice.exceptions.UserNotFoundException;
+import ch.qos.logback.core.testUtil.RandomUtil;
+import learning.userservice.exceptions.*;
+import learning.userservice.models.Token;
 import learning.userservice.models.User;
 import learning.userservice.models.UserAddress;
+import learning.userservice.repositories.TokenRepository;
 import learning.userservice.repositories.UserAddressRepository;
 import learning.userservice.repositories.UserRepository;
+import learning.userservice.repositories.projections.SignupUser;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.hibernate.sql.Update;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.random.RandomGenerator;
 
 @Service("selfUserService")
 public class SelfUserService implements UserService{
     UserRepository userRepository;
     UserAddressRepository userAddressRepository;
+
+    BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final TokenRepository tokenRepository;
+
     @Autowired
     public SelfUserService(UserRepository userRepository,
-                           UserAddressRepository userAddressRepository){
+                           UserAddressRepository userAddressRepository,
+                           BCryptPasswordEncoder bCryptPasswordEncoder,
+                           TokenRepository tokenRepository){
         this.userRepository = userRepository;
         this.userAddressRepository = userAddressRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.tokenRepository = tokenRepository;
     }
+
+
+    @Override
+    public User signup(String firstName, String lastName, String email, String password) throws UserAlreadyExistsException {
+        User user = new User();
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setEmail(email);
+        user.setHashedPassword(bCryptPasswordEncoder.encode(password));
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if(userOptional.isPresent()){
+            throw new UserAlreadyExistsException("user with email " + email + " already exists.");
+        }
+        return userRepository.save(user);
+    }
+
+    @Override
+    public Token login(String email, String password) throws UserNotFoundException, InvalidFieldException {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if(userOptional.isEmpty()){
+            throw new UserNotFoundException("Invalid email");
+        }
+        User user = userOptional.get();
+        if(!bCryptPasswordEncoder.matches(password, user.getHashedPassword())){
+            // throw exception
+            throw new InvalidFieldException("Invalid Password!");
+        }
+        Token token = new Token();
+        token.setUser(user);
+        token.setExpiryAt(Date.from(LocalDate.now().plusDays(30).atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        token.setValue(RandomStringUtils.randomAlphanumeric(128));
+
+        return tokenRepository.save(token);
+    }
+
+    @Override
+    public void logout(String token) throws TokenNotFoundOrExpiredException {
+        Optional<Token> tokenOptional = tokenRepository.findByValueAndDeletedEquals(token, false);
+        if(tokenOptional.isEmpty()){
+            throw new TokenNotFoundOrExpiredException("token not found or expired");
+        }
+        Token token1 = tokenOptional.get();
+        token1.setDeleted(true);
+        tokenRepository.save(token1);
+        return;
+    }
+
+    @Override
+    public User validateToken(String token) throws TokenNotFoundOrExpiredException {
+        Optional<Token> tokenOptional = tokenRepository.findByValueAndDeletedEquals(token, false);
+        if(tokenOptional.isEmpty()){
+            throw new TokenNotFoundOrExpiredException("token not found. PLease login again");
+        }
+        return tokenOptional.get().getUser();
+    }
+
 
     @Override
     public User getUser(Long id) throws UserNotFoundException {
@@ -32,6 +105,7 @@ public class SelfUserService implements UserService{
         if(userOptional.isEmpty()){
             throw new UserNotFoundException("User with id: "+ id + " not found.");
         }
+
         return userOptional.get();
     }
 
