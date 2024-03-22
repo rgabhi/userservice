@@ -21,6 +21,9 @@ public class CustomUserDetails implements UserDetails {
     private boolean credentialsNonExpired;
     private boolean enabled;
 
+
+
+    private long userId;
     public CustomUserDetails(){};
     public CustomUserDetails(User user){
 //        this.user = user;
@@ -31,6 +34,7 @@ public class CustomUserDetails implements UserDetails {
         this.username = user.getEmail();
         this.password = user.getHashedPassword();
         this.authorities = new ArrayList<>();
+        this.userId= user.getId();
         for(Role role : user.getRoles()){
             this.authorities.add(new CustomGrantedAuthority(role));
         }
@@ -73,5 +77,9 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return this.enabled;
+    }
+
+    public long getUserId() {
+        return userId;
     }
 }
