@@ -1,5 +1,6 @@
 package learning.userservice.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import learning.userservice.exceptions.*;
 import learning.userservice.models.Token;
 import learning.userservice.models.User;
@@ -7,7 +8,7 @@ import learning.userservice.models.User;
 import java.util.List;
 
 public interface UserService {
-    public User signup(String firstName, String lastName, String email, String password) throws UserAlreadyExistsException;
+    public User signup(String firstName, String lastName, String email, String password) throws UserAlreadyExistsException, JsonProcessingException;
 
     public Token login(String email, String password) throws UserNotFoundException, InvalidFieldException;
 

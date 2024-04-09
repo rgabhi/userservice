@@ -1,5 +1,6 @@
 package learning.userservice.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import learning.userservice.dtos.*;
 import learning.userservice.exceptions.*;
 import learning.userservice.models.Token;
@@ -26,11 +27,12 @@ public class UserController {
     UserService userService;
     @Autowired
     public UserController(@Qualifier("selfUserService") UserService userService){
+
         this.userService = userService;
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<User> signUp(@RequestBody SignUpRequestDto requestDto) throws UserAlreadyExistsException {
+    public ResponseEntity<User> signUp(@RequestBody SignUpRequestDto requestDto) throws UserAlreadyExistsException, JsonProcessingException {
         User user = userService.signup(requestDto.getFirstName(), requestDto.getLastName(),
                 requestDto.getEmail(), requestDto.getPassword());
         return new ResponseEntity<>(user, HttpStatus.OK);

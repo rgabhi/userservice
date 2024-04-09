@@ -1,6 +1,9 @@
 package learning.userservice.services;
 
 import ch.qos.logback.core.testUtil.RandomUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import learning.userservice.dtos.SendEmailEventDto;
 import learning.userservice.exceptions.*;
 import learning.userservice.models.Token;
 import learning.userservice.models.User;
@@ -13,6 +16,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.hibernate.sql.Update;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -32,20 +36,29 @@ public class SelfUserService implements UserService{
     BCryptPasswordEncoder bCryptPasswordEncoder;
     private final TokenRepository tokenRepository;
 
+    private KafkaTemplate<String, String> kafkaTemplate;
+
+    private ObjectMapper objectMapper;
+
     @Autowired
     public SelfUserService(UserRepository userRepository,
                            UserAddressRepository userAddressRepository,
                            BCryptPasswordEncoder bCryptPasswordEncoder,
-                           TokenRepository tokenRepository){
+                           TokenRepository tokenRepository,
+                           KafkaTemplate<String, String> kafkaTemplate,
+                           ObjectMapper objectMapper){
         this.userRepository = userRepository;
         this.userAddressRepository = userAddressRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.tokenRepository = tokenRepository;
+        this.kafkaTemplate = kafkaTemplate;
+        this.objectMapper = objectMapper;
+
     }
 
 
     @Override
-    public User signup(String firstName, String lastName, String email, String password) throws UserAlreadyExistsException {
+    public User signup(String firstName, String lastName, String email, String password) throws UserAlreadyExistsException, JsonProcessingException {
         User user = new User();
         user.setFirstName(firstName);
         user.setLastName(lastName);
@@ -55,7 +68,24 @@ public class SelfUserService implements UserService{
         if(userOptional.isPresent()){
             throw new UserAlreadyExistsException("user with email " + email + " already exists.");
         }
-        return userRepository.save(user);
+        user  = userRepository.save(user);
+
+        //emailDto
+        SendEmailEventDto sendEmailEventDto = new SendEmailEventDto();
+        sendEmailEventDto.setTo(email);
+        sendEmailEventDto.setFrom("abhinavrgupta98@gmail.com ");
+        sendEmailEventDto.setSubject("Welcome to Ecomm  Webapp by Abhinav");
+        sendEmailEventDto.setBody(
+                "Thank you for signing up!" +
+                        "Looking forward to your great shopping  experience."+
+                        "\n Regards,\nAbhinav Gupta"
+        );
+
+        kafkaTemplate.send(
+                "sendEmail",
+                objectMapper.writeValueAsString(sendEmailEventDto)
+        );
+        return user;
     }
 
     @Override
